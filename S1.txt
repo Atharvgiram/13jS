@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical">
+    <Button
+        android:id="@+id/btnSend"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Send Hello" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Button" />
+</LinearLayout>
+
+
+
+
+
+
+
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/txtMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="24sp" />
+</LinearLayout>
+
+
+
+
+
+package com.example.slip1a;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    Button btnSend;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        // Link button with XML
+        btnSend = findViewById(R.id.btnSend);
+
+        // Button click event
+        btnSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                // Create Intent to move from MainActivity to SecondActivity
+                Intent intent = new Intent(MainActivity.this, SecondActivity.class);
+
+                // Put "Hello" message inside Intent
+                intent.putExtra("message", "Hello");
+
+                // Start SecondActivity
+                startActivity(intent);
+            }
+        });
+    }
+}
+
+
+
+
+package com.example.slip1a;
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.TextView;
+import androidx.appcompat.app.AppCompatActivity;
+public class SecondActivity extends AppCompatActivity {
+    TextView txtMessage;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_second);
+
+        // Link TextView with XML
+        txtMessage = findViewById(R.id.txtMessage);
+
+        // Get Intent from MainActivity
+        Intent intent = getIntent();
+
+        // Retrieve message using key
+        String message = intent.getStringExtra("message");
+
+        // Display message
+        txtMessage.setText(message);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical">
+    <Button
+        android:id="@+id/btnStart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Start Task" />
+</LinearLayout>
+
+Main Activity.java
+
+
+package com.example.slip1b;
+import android.app.ProgressDialog;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+
+import androidx.appcompat.app.AppCompatActivity;
+public class MainActivity extends AppCompatActivity {
+    Button btnStart;
+    ProgressDialog progressDialog;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        // Link button with XML
+        btnStart = findViewById(R.id.btnStart);
+
+        // Button click event
+        btnStart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Start AsyncTask
+                new MyTask().execute();
+            }
+        });
+    }
+
+    // AsyncTask class
+    private class MyTask extends AsyncTask<Void, Integer, Void> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            // Create and show ProgressDialog
+            progressDialog = new ProgressDialog(MainActivity.this);
+            progressDialog.setTitle("Loading");
+            progressDialog.setMessage("Please wait...");
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            progressDialog.setMax(100);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            // Simulate long running task
+            for (int i = 0; i <= 100; i += 10) {
+                try {
+                    Thread.sleep(500); // Pause for 0.5 second
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                // Update progress
+                publishProgress(i);
+            }
+            return null;
+        }
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+
+            // Update progress dialog
+            progressDialog.setProgress(values[0]);
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+
+            // Dismiss progress dialog after task completion
+            progressDialog.dismiss();
+        }
+    }
+}
